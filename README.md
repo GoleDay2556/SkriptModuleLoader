@@ -1,6 +1,6 @@
 # SkriptModuleLoader
 
-**Lancasters Studios – Modular Skript Loader Plugin**  
+**Modular Skript Loader Plugin**  
 
 SkriptModuleLoader is a **modular Minecraft Skript loader** that allows you to easily bundle `.sk` scripts with your plugin or drop external scripts into the loader. Works on **Minecraft 1.21+** and **Java 21**.
 
