@@ -3,7 +3,7 @@
 
     <groupId>me.lancastersstudios</groupId>
     <artifactId>SkriptModuleLoader</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <packaging>jar</packaging>
 
     <properties>

@@ -22,7 +22,7 @@ public final class SkriptModuleLoader extends JavaPlugin {
 
         // Check Skript dependency
         if (Bukkit.getPluginManager().getPlugin("Skript") == null) {
-            getLogger().severe("Skript NOT found! Disabling plugin.");
+            getLogger().severe("Skript not found! Disabling plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -50,11 +50,10 @@ public final class SkriptModuleLoader extends JavaPlugin {
         // Copy external scripts only if missing
         copyExternalModules();
 
-        // Delay reload until Skript is fully ready
+
         Bukkit.getScheduler().runTaskLater(this, () -> {
-            getLogger().info("Reloading Skript scripts...");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "skript reload scripts");
-            getLogger().info("Skript reload command executed.");
+            getLogger().info("Skript plugin(s) were injected into plugins/Skript/scripts/modules.");
+            getLogger().info("If you can't see the loaded plugin, run this command: /sk reload modules");
         }, 100L); // ~5 seconds
     }
 
