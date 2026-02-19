@@ -59,7 +59,7 @@ public final class SkriptModuleLoader extends JavaPlugin {
     }
 
     private void extractBundledModules() {
-        String[] bundledScripts = {"example.sk", "another.sk"}; // Add bundled scripts here
+        String[] bundledScripts = {}; // Add bundled scripts here
         getLogger().info("Checking bundled scripts...");
 
         for (String script : bundledScripts) {
