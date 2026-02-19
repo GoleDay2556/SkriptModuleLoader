@@ -20,17 +20,29 @@ This allows modular script management, versioning, and professional release work
 Your project folder should look like this:
 
 SkriptModuleLoader/
+
 ├─ pom.xml
+
 ├─ src/
+
 │ └─ main/
+
 │ ├─ java/
+
 │ │ └─ me/lancastersstudios/skriptloader/
+
 │ │ └─ SkriptModuleLoader.java
+
 │ └─ resources/
+
 │ ├─ plugin.yml
+
 │ └─ modules/
+
 │ ├─ engine.sk
+
 │ ├─ essentialsL.sk
+
 │ └─ myCustomModule.sk
 
 
