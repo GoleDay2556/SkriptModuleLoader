@@ -1,4 +1,4 @@
-**SkriptModuleLoader** allows you to load **any number of `.sk` scripts** modularly into your server. This guide covers **everything** from setup to running your scripts.
+**SkriptModuleLoader** allows you to load **any number of `.sk` scripts** modularly into your server. This guide covers **everything** from setup to running your scripts. Also, it can be used as a "Java" plugin that loads Skript Plugins
 
 ---
 
@@ -12,24 +12,13 @@
 ---
 
 ## 2️⃣ Project Setup & Compilation
+1. Open project folder, and locate ```\<root-folder>\SkriptModuleLoader\src\main\recources\modules```
 
-1. Open the project folder (`SkriptModuleLoader`) in a terminal or PowerShell.
+2. Add your Skript ```(.sk)``` file(s) to ```\src\main\recources\modules```
+  
+1. Go to the root directory of the project
 
-2. Set your Java 21 path (optional if Java is in PATH):
-
-```set JAVA_HOME=C:\path\to\java21```
-```set PATH=%JAVA_HOME%\bin;%PATH%```
-
-
-3. Set your Maven path (optional if Maven is in PATH):
-
-```set MAVEN_HOME=C:\path\to\apache-maven-3.9.12\bin```
-
-
-4. Compile the plugin using Maven:
-
-```"%MAVEN_HOME%\mvn.cmd" clean package```
-
+4. Run the build.bat file or run it via PowerShell ```./build.bat```
 
 5. After a successful build, the JAR will be here:
 
@@ -45,29 +34,19 @@
 ```<server_root>/plugins/```
 
 
-2. Create the modules folder (if it doesn’t exist):
-
-```<server_root>/plugins/Skript/scripts/modules/```
-
-
-3. Copy **all your `.sk` scripts** into that folder:
-
-```<server_root>/plugins/Skript/scripts/modules/```
-```├─ engine.sk```
-```├─ essentialsL.sk```
-```├─ myCustomModule.sk```
+2. And just start the server, Plugin will automatically install the Skripts and enable them!
 
 
 ---
 
-## 4️⃣ Starting the Server
+##  Starting the Server
 
 Start your Paper server normally.  
 SkriptModuleLoader will automatically copy scripts to the correct location and reload them after 2 seconds.
 
 ---
 
-## 5️⃣ Usage Notes
+## 4️⃣ Usage Notes
 
 - Supports **any number of `.sk` scripts**.  
 - No bundled scripts are included — you control which scripts are loaded.  
@@ -76,16 +55,22 @@ SkriptModuleLoader will automatically copy scripts to the correct location and r
 
 ---
 
-## 6️⃣ Optional: One-Click Build Script
+## 5️⃣ Optional: One-Click Build Script
 
 You can create a `.bat` file in the project folder for easier compilation:
 
 ```@echo off```
+
 ```echo Building SkriptModuleLoader...```
+
 ```set JAVA_HOME=C:\path\to\java21```
+
 ```set PATH=%JAVA_HOME%\bin;%PATH%```
+
 ```set MAVEN_HOME=C:\path\to\apache-maven-3.9.12\bin```
+
 ```"%MAVEN_HOME%\mvn.cmd" clean package```
+
 ```pause```
 
 
@@ -93,29 +78,44 @@ Double-clicking this file will compile the plugin automatically.
 
 ---
 
-## 7️⃣ Folder Overview
+## 6️⃣ Folder Overview
 
 Project structure:
 
 ```SkriptModuleLoader/```
+
 ```├─ pom.xml```
+
 ```├─ src/```
+
 ```│ └─ main/```
+
 ```│ └─ java/```
+
 ```│ └─ me/lancastersstudios/skriptloader/SkriptModuleLoader.java```
+
 ```├─ target/```
+
 ```│ └─ SkriptModuleLoader-1.1.0.jar```
-```└─ modules/ <-- Optional for bundled scripts if you use them```
+
+```└─ modules/ <-- Place all .sk files here```
 
 
 Server structure after installation:
 
 ```<server_root>/plugins/```
+
 ```├─ SkriptModuleLoader-1.1.0.jar```
+
 ```├─ Skript/```
+
 ```│ └─ scripts/```
+
 ```│ └─ modules/```
+
 ```│ ├─ engine.sk```
+
 ```│ ├─ essentialsL.sk```
+
 ```│ └─ myCustomModule.sk```
 
