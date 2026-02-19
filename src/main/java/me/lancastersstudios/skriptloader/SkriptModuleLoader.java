@@ -5,114 +5,119 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.JarURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 public final class SkriptModuleLoader extends JavaPlugin {
 
+    private File externalModulesFolder;
     private File skriptTargetFolder;
 
     @Override
     public void onEnable() {
 
-        log("=================================");
-        log("Starting SkriptModuleLoader v" + getDescription().getVersion());
-        log("=================================");
+        getLogger().info("=================================");
+        getLogger().info("Starting SkriptModuleLoader v" + getDescription().getVersion());
+        getLogger().info("=================================");
 
-        // Dependency check
+        // Check Skript dependency
         if (Bukkit.getPluginManager().getPlugin("Skript") == null) {
-            error("Skript NOT found! Disabling plugin.");
+            getLogger().severe("Skript NOT found! Disabling plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
+        // Resolve folders
+        externalModulesFolder = new File(getDataFolder(), "modules");
         skriptTargetFolder = new File("plugins/Skript/scripts/modules");
 
-        log("Target Skript modules folder:");
-        log("→ " + skriptTargetFolder.getAbsolutePath());
+        getLogger().info("External modules folder: " + externalModulesFolder.getAbsolutePath());
+        getLogger().info("Skript target folder: " + skriptTargetFolder.getAbsolutePath());
 
+        // Create folders if missing
+        if (!externalModulesFolder.exists()) {
+            boolean created = externalModulesFolder.mkdirs();
+            getLogger().info("Created modules folder: " + created);
+        }
         if (!skriptTargetFolder.exists()) {
             boolean created = skriptTargetFolder.mkdirs();
-            log("Created Skript modules folder: " + created);
+            getLogger().info("Created Skript modules folder: " + created);
         }
 
+        // Copy bundled scripts only if missing
         extractBundledModules();
 
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            log("Reloading Skript scripts...");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "skript reload scripts");
-            log("Skript reload command executed.");
-        }, 90L);
+        // Copy external scripts only if missing
+        copyExternalModules();
 
-        log("SkriptModuleLoader ENABLED successfully.");
+        // Delay reload until Skript is fully ready
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            getLogger().info("Reloading Skript scripts...");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "skript reload scripts");
+            getLogger().info("Skript reload command executed.");
+        }, 100L); // ~5 seconds
     }
 
     private void extractBundledModules() {
+        String[] bundledScripts = {"example.sk", "another.sk"}; // Add bundled scripts here
+        getLogger().info("Checking bundled scripts...");
 
-        log("Scanning JAR for embedded .sk files...");
-        log("Expected path inside JAR: /modules/*.sk");
+        for (String script : bundledScripts) {
+            try {
+                File target = new File(skriptTargetFolder, script);
+                if (target.exists()) {
+                    getLogger().info("Bundled script already exists, skipping: " + script);
+                    continue;
+                }
 
-        try {
-            URL jarUrl = getClass().getProtectionDomain().getCodeSource().getLocation();
-            JarURLConnection connection = (JarURLConnection) new URL("jar:" + jarUrl + "!/").openConnection();
-
-            try (JarFile jar = connection.getJarFile()) {
-                Enumeration<JarEntry> entries = jar.entries();
-                boolean foundAny = false;
-
-                while (entries.hasMoreElements()) {
-                    JarEntry entry = entries.nextElement();
-                    String name = entry.getName();
-
-                    if (name.startsWith("modules/") && name.endsWith(".sk")) {
-                        foundAny = true;
-                        String fileName = name.substring("modules/".length());
-                        File target = new File(skriptTargetFolder, fileName);
-
-                        log("Extracting: " + name);
-                        log("→ " + target.getAbsolutePath());
-
-                        try (InputStream in = jar.getInputStream(entry)) {
-                            Files.copy(in, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        }
-
-                        log("✔ Extracted " + fileName);
+                try (InputStream in = getClass().getResourceAsStream("/modules/" + script)) {
+                    if (in == null) {
+                        getLogger().warning("Bundled script not found in resources: " + script);
+                        continue;
                     }
+                    Files.copy(in, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    getLogger().info("Bundled script copied: " + script);
                 }
-
-                if (!foundAny) {
-                    warn("NO .sk FILES FOUND inside JAR!");
-                    warn("Make sure they are in: src/main/resources/modules/");
-                }
+            } catch (Exception e) {
+                getLogger().severe("Failed to copy bundled script: " + script);
+                e.printStackTrace();
             }
+        }
+    }
 
-        } catch (Exception e) {
-            error("FAILED to extract embedded modules!");
-            e.printStackTrace();
+    private void copyExternalModules() {
+        getLogger().info("Checking external scripts in plugin modules folder...");
+
+        if (!externalModulesFolder.exists()) {
+            getLogger().warning("External modules folder missing, skipping external scripts.");
+            return;
+        }
+
+        File[] files = externalModulesFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".sk"));
+
+        if (files == null || files.length == 0) {
+            getLogger().info("No external .sk files found.");
+            return;
+        }
+
+        for (File file : files) {
+            try {
+                File target = new File(skriptTargetFolder, file.getName());
+                if (target.exists()) {
+                    getLogger().info("External script already exists, skipping: " + file.getName());
+                    continue;
+                }
+                Files.copy(file.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                getLogger().info("External script copied: " + file.getName());
+            } catch (Exception e) {
+                getLogger().severe("Failed to copy external script: " + file.getName());
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void onDisable() {
-        log("SkriptModuleLoader disabled.");
-    }
-
-    /* ---------- Logging helpers ---------- */
-
-    private void log(String msg) {
-        getLogger().info(msg);
-    }
-
-    private void warn(String msg) {
-        getLogger().warning(msg);
-    }
-
-    private void error(String msg) {
-        getLogger().severe(msg);
+        getLogger().info("SkriptModuleLoader disabled.");
     }
 }
