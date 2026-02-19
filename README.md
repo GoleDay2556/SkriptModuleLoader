@@ -54,10 +54,7 @@ SkriptModuleLoader/
 
 Write your `.sk` files as normal Skript scripts. Examples:
 
-**test.sk**
-skript
-```on load:
-    broadcast "&aEngine module loaded!"
+```
 myCustomModule.sk
 
 every 10 minutes:
