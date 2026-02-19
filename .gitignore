@@ -4,6 +4,6 @@ java21/
 # Ignore any IDE specific files
 .vscode/
 
-SkriptModuleLoader.zip
+SkriptModuleLoader-1.2.0.zip
 
 target/
