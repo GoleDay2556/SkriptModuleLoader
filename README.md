@@ -42,22 +42,22 @@ SkriptModuleLoader/
 
 Write your `.sk` files as normal Skript scripts. Examples:
 
-**engine.sk**
-```skript
-on load:
+**test.sk**
+skript
+```on load:
     broadcast "&aEngine module loaded!"
 myCustomModule.sk
 
 every 10 minutes:
     broadcast "&bCustom module is running"
 You can split your system into multiple scripts — the plugin will handle loading all of them.
-
-🔨 Building the Plugin
-Option A — Using Maven (Command Line)
+```
+## 🔨 Building the Plugin
+# Option A — Using Maven (Command Line)
 Open a terminal in the project root.
 
 Set Java and Maven paths (if needed):
-
+```
 set JAVA_HOME=C:\path\to\java21
 set PATH=%JAVA_HOME%\bin;%PATH%
 
@@ -65,13 +65,14 @@ set MAVEN_HOME=C:\path\to\apache-maven-3.9.12\bin
 Compile the plugin:
 
 "%MAVEN_HOME%\mvn.cmd" clean package
+```
 After building, the JAR is created here:
 
-target/SkriptModuleLoader-1.1.0.jar
-Option B — One-Click Build Script (Windows)
+```target/SkriptModuleLoader-1.1.0.jar```
+# Option B — One-Click Build Script (Windows)
 Create build.bat in your project root:
 
-@echo off
+```@echo off
 echo Building SkriptModuleLoader...
 
 set JAVA_HOME=C:\path\to\java21
@@ -80,16 +81,18 @@ set PATH=%JAVA_HOME%\bin;%PATH%
 set MAVEN_HOME=C:\path\to\apache-maven-3.9.12\bin
 "%MAVEN_HOME%\mvn.cmd" clean package
 
+
 pause
+```
 Double-click to compile automatically.
 
-🚀 Installing on a Server
+## 🚀 Installing on a Server
 Copy the compiled JAR:
 
-target/SkriptModuleLoader-1.1.0.jar
+```target/SkriptModuleLoader-1.1.0.jar```
 Paste it into your server's plugins/ folder:
 
-<server_root>/plugins/
+```<server_root>/plugins/```
 Start the server normally.
 
 🗂 How It Works
@@ -97,7 +100,7 @@ On server start, the plugin checks if Skript is installed.
 
 It creates the target folder if missing:
 
-plugins/Skript/scripts/modules/
+```plugins/Skript/scripts/modules/```
 It copies all .sk files from the plugin JAR into the modules folder.
 
 It reloads Skript automatically after 5 seconds (90 ticks).
@@ -105,15 +108,18 @@ It reloads Skript automatically after 5 seconds (90 ticks).
 Example resulting folder:
 
 plugins/Skript/scripts/modules/
+
 ├─ engine.sk
+
 ├─ essentialsL.sk
+
 └─ myCustomModule.sk
 ⚠️ Do not edit these files manually — always edit the source .sk files in the Java project.
 
-🔄 Updating Scripts
+## 🔄 Updating Scripts
 Edit scripts in:
 
-src/main/resources/modules/
+```src/main/resources/modules/```
 Rebuild the JAR with Maven.
 
 Replace the old plugin in the server plugins/ folder.
@@ -122,7 +128,7 @@ Restart the server.
 
 The updated scripts are automatically loaded.
 
-🧪 Debugging
+## 🧪 Debugging
 The plugin provides detailed logging:
 
 Checks if .sk files exist in the JAR
@@ -137,7 +143,7 @@ No .sk files found → Your scripts are not inside src/main/resources/modules/.
 
 Skript not found → Ensure Skript plugin is installed and compatible.
 
-✅ Recommended Usage
+## ✅ Recommended Usage
 Modular Skript systems
 
 Teams working on Skript
@@ -146,14 +152,14 @@ Clean production servers
 
 Public releases (GitHub, Modrinth)
 
-⚠️ Notes
+# ⚠️ Notes
 SkriptModuleLoader does not replace Skript. You still write .sk scripts normally.
 
 Only works with Skript 2.14.1+ and Paper 1.21+.
 
 Always edit scripts in the Java project, not the extracted server folder.
 
-🏁 Summary
+## 🏁 Summary
 SkriptModuleLoader turns your .sk files into a Java-style, distributable plugin.
 You can:
 
