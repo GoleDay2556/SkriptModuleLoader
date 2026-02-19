@@ -77,7 +77,7 @@ Compile the plugin:
 ```
 After building, the JAR is created here:
 
-```target/SkriptModuleLoader-1.1.0.jar```
+```target/SkriptModuleLoader-{version}.jar```
 ## Option B — One-Click Build Script (Windows)
 Create build.bat in your project root:
 
