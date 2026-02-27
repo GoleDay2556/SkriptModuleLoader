@@ -5,8 +5,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 public final class SkriptModuleLoader extends JavaPlugin {
 
@@ -15,6 +17,9 @@ public final class SkriptModuleLoader extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        // Save default config if missing
+        saveDefaultConfig();
 
         getLogger().info("=================================");
         getLogger().info("Starting SkriptModuleLoader v" + getDescription().getVersion());
@@ -27,64 +32,96 @@ public final class SkriptModuleLoader extends JavaPlugin {
             return;
         }
 
-        // Resolve folders
-        externalModulesFolder = new File(getDataFolder(), "modules");
-        skriptTargetFolder = new File("plugins/Skript/scripts/modules");
+        // ==============================
+        // Load & Validate Config Values
+        // ==============================
+
+        String externalFolderName = getConfig().getString("settings.folder-name", "modules");
+        String skriptBasePath = getConfig().getString("settings.skript-path", "plugins/Skript/scripts");
+
+        // Normalize slashes
+        skriptBasePath = skriptBasePath.replace("\\", "/");
+
+        // Setup folder references
+        externalModulesFolder = new File(getDataFolder(), externalFolderName);
+        skriptTargetFolder = new File(skriptBasePath, externalFolderName);
 
         getLogger().info("External modules folder: " + externalModulesFolder.getAbsolutePath());
         getLogger().info("Skript target folder: " + skriptTargetFolder.getAbsolutePath());
 
+        // ==============================
         // Create folders if missing
+        // ==============================
+
         if (!externalModulesFolder.exists()) {
             boolean created = externalModulesFolder.mkdirs();
-            getLogger().info("Created modules folder: " + created);
+            getLogger().info("Created external modules folder: " + created);
         }
+
         if (!skriptTargetFolder.exists()) {
             boolean created = skriptTargetFolder.mkdirs();
             getLogger().info("Created Skript modules folder: " + created);
         }
 
-        // Copy bundled scripts only if missing
-        extractBundledModules();
+        // ==============================
+        // Inject Scripts
+        // ==============================
 
-        // Copy external scripts only if missing
+        extractBundledModules();
         copyExternalModules();
 
-
         Bukkit.getScheduler().runTaskLater(this, () -> {
-            getLogger().info("Skript plugin(s) were injected into plugins/Skript/scripts/modules.");
-            getLogger().info("If you can't see the loaded plugin, run this command: /sk reload modules");
-        }, 100L); // ~5 seconds
+            getLogger().info("Skript modules injected into: " + skriptTargetFolder.getAbsolutePath());
+            getLogger().info("If they don't load automatically, run: /sk reload modules");
+        }, 100L);
     }
 
+    // ==================================================
+    // Extract bundled scripts from jar (only if missing)
+    // ==================================================
     private void extractBundledModules() {
-        String[] bundledScripts = {}; // Add bundled scripts here
+
+        List<String> bundledScripts = getConfig().getStringList("settings.bundled-scripts");
+
+        if (bundledScripts.isEmpty()) {
+            getLogger().info("No bundled scripts listed in config.");
+            return;
+        }
+
         getLogger().info("Checking bundled scripts...");
 
         for (String script : bundledScripts) {
             try {
                 File target = new File(skriptTargetFolder, script);
+
                 if (target.exists()) {
                     getLogger().info("Bundled script already exists, skipping: " + script);
                     continue;
                 }
 
                 try (InputStream in = getClass().getResourceAsStream("/modules/" + script)) {
+
                     if (in == null) {
-                        getLogger().warning("Bundled script not found in resources: " + script);
+                        getLogger().warning("Bundled script not found in jar: " + script);
                         continue;
                     }
+
                     Files.copy(in, target.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     getLogger().info("Bundled script copied: " + script);
                 }
-            } catch (Exception e) {
+
+            } catch (IOException e) {
                 getLogger().severe("Failed to copy bundled script: " + script);
                 e.printStackTrace();
             }
         }
     }
 
+    // ==================================================
+    // Copy external scripts (only if missing)
+    // ==================================================
     private void copyExternalModules() {
+
         getLogger().info("Checking external scripts in plugin modules folder...");
 
         if (!externalModulesFolder.exists()) {
@@ -102,13 +139,16 @@ public final class SkriptModuleLoader extends JavaPlugin {
         for (File file : files) {
             try {
                 File target = new File(skriptTargetFolder, file.getName());
+
                 if (target.exists()) {
                     getLogger().info("External script already exists, skipping: " + file.getName());
                     continue;
                 }
+
                 Files.copy(file.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 getLogger().info("External script copied: " + file.getName());
-            } catch (Exception e) {
+
+            } catch (IOException e) {
                 getLogger().severe("Failed to copy external script: " + file.getName());
                 e.printStackTrace();
             }

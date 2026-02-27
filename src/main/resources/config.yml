@@ -1,0 +1,7 @@
+settings:
+  folder-name: modules
+  skript-path: plugins/Skript/scripts
+
+  # Bundle all your scripts here
+  bundled-scripts:
+    - example.sk

@@ -1,30 +1,65 @@
 @echo off
-echo Building SkriptModuleLoader with Java 21...
+setlocal enabledelayedexpansion
 
-:: Set JAVA_HOME to your portable Java
-set JAVA_HOME=%~dp0java21
+echo =====================================
+echo   SkriptModuleLoader Auto Builder
+echo =====================================
 
-:: Set MAVEN_HOME to your Maven bin folder
-set MAVEN_HOME=C:\Users\golov_sj1znxl\Documents\Maven\apache-maven-3.9.12\bin
+:: -------------------------------------
+:: Check JAVA_HOME
+:: -------------------------------------
+if defined JAVA_HOME (
+    echo Using JAVA_HOME: %JAVA_HOME%
+    set "PATH=%JAVA_HOME%\bin;%PATH%"
+) else (
+    echo JAVA_HOME is not set. Using system Java...
+)
 
-:: Run Maven clean packages
-"%MAVEN_HOME%\mvn.cmd" clean package
+java -version >nul 2>&1
+if errorlevel 1 (
+    echo ERROR: Java not found!
+    pause
+    exit /b 1
+)
+
+:: -------------------------------------
+:: Check MAVEN_HOME
+:: -------------------------------------
+if defined MAVEN_HOME (
+    echo Using MAVEN_HOME: %MAVEN_HOME%
+    set "MVN_CMD=%MAVEN_HOME%\mvn.cmd"
+) else (
+    where mvn >nul 2>&1
+    if errorlevel 1 (
+        echo ERROR: Maven not found!
+        echo Set MAVEN_HOME or install Maven.
+        pause
+        exit /b 1
+    )
+    echo Using system Maven...
+    set "MVN_CMD=mvn"
+)
+
+:: -------------------------------------
+:: Build Project
+:: -------------------------------------
+echo.
+echo Building project...
+echo.
+
+call "%MVN_CMD%" clean package
+
+if errorlevel 1 (
+    echo.
+    echo BUILD FAILED!
+    pause
+    exit /b 1
+)
 
 echo.
-echo Build finished!
-pause
-@echo off
-echo Building SkriptModuleLoader with Java 21...
-
-:: Set JAVA_HOME to your portable Java
-set JAVA_HOME=%~dp0java21
-
-:: Set MAVEN_HOME to your Maven bin folder
-set MAVEN_HOME=C:\Users\golov_sj1znxl\Documents\Maven\apache-maven-3.9.12\bin
-
-:: Run Maven clean package
-"%MAVEN_HOME%\mvn.cmd" clean package
-
+echo BUILD SUCCESS!
+echo Output located in: target\
 echo.
-echo Build finished!
+
 pause
+exit /b 0
