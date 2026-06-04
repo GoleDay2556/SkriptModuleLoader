@@ -16,42 +16,34 @@ public final class SkriptModuleLoader extends JavaPlugin {
     private File skriptTargetFolder;
 
     @Override
-    public void onEnable() {
-
-        // Save default config if missing
+    public 
         saveDefaultConfig();
 
         getLogger().info("=================================");
         getLogger().info("Starting SkriptModuleLoader v" + getDescription().getVersion());
         getLogger().info("=================================");
 
-        // Check Skript dependency
         if (Bukkit.getPluginManager().getPlugin("Skript") == null) {
             getLogger().severe("Skript not found! Disabling plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
 
-        // ==============================
-        // Load & Validate Config Values
-        // ==============================
+
 
         String externalFolderName = getConfig().getString("settings.folder-name", "modules");
         String skriptBasePath = getConfig().getString("settings.skript-path", "plugins/Skript/scripts");
 
-        // Normalize slashes
         skriptBasePath = skriptBasePath.replace("\\", "/");
 
-        // Setup folder references
+       
         externalModulesFolder = new File(getDataFolder(), externalFolderName);
         skriptTargetFolder = new File(skriptBasePath, externalFolderName);
 
         getLogger().info("External modules folder: " + externalModulesFolder.getAbsolutePath());
         getLogger().info("Skript target folder: " + skriptTargetFolder.getAbsolutePath());
 
-        // ==============================
-        // Create folders if missing
-        // ==============================
+
 
         if (!externalModulesFolder.exists()) {
             boolean created = externalModulesFolder.mkdirs();
@@ -63,9 +55,6 @@ public final class SkriptModuleLoader extends JavaPlugin {
             getLogger().info("Created Skript modules folder: " + created);
         }
 
-        // ==============================
-        // Inject Scripts
-        // ==============================
 
         extractBundledModules();
         copyExternalModules();
@@ -76,9 +65,7 @@ public final class SkriptModuleLoader extends JavaPlugin {
         }, 100L);
     }
 
-    // ==================================================
-    // Extract bundled scripts from jar (only if missing)
-    // ==================================================
+
     private void extractBundledModules() {
 
         List<String> bundledScripts = getConfig().getStringList("settings.bundled-scripts");
@@ -117,9 +104,7 @@ public final class SkriptModuleLoader extends JavaPlugin {
         }
     }
 
-    // ==================================================
-    // Copy external scripts (only if missing)
-    // ==================================================
+
     private void copyExternalModules() {
 
         getLogger().info("Checking external scripts in plugin modules folder...");
